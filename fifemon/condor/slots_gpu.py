@@ -82,6 +82,7 @@ def get_pool_slots_gpu(pool, retry_delay=30, max_retries=4, totals_only=False, j
 			'Gpus','TotalSlotGpus','TotalGpus',
                         'LoadAvg','TotalCondorLoadAvg','TotalLoadAvg',
                         'AccountingGroup','RemoteGroup','RemoteOwner',
+			'AvgGPUs-usage','AvgGPUs-used_mem',
                         'kflops','IS_GLIDEIN'])
         except:
             logger.warning("trouble getting pool {0} startds, retrying in {1}s.".format(pool,retry_delay))
@@ -109,6 +110,7 @@ def get_pool_slots_gpu(pool, retry_delay=30, max_retries=4, totals_only=False, j
                       "TotalMemory", "TotalSlotMemory", "Memory",
                       "TotalCpus", "TotalSlotCpus", "Cpus",
                       "TotalGpus", "TotalSlotGpus", "Gpus",
+                      "AvgGPUs-usage","AvgGPUs-used_mem",
                       "TotalLoadAvg", "LoadAvg", "TotalCondorLoadAvg"]:
                 metric = ".".join([slot_type, "totals", k])
                 data[metric] += a.get(k,0)
@@ -142,7 +144,7 @@ def get_pool_slots_gpu(pool, retry_delay=30, max_retries=4, totals_only=False, j
             if owner == "Unknown" and "RemoteOwner" in a:
                 owner = a["RemoteOwner"].split("@")[0]
 
-            for k in ["Disk", "Memory", "Cpus", "Gpus", "LoadAvg"]:
+            for k in ["Disk", "Memory", "Cpus", "Gpus", "LoadAvg","AvgGPUs-usage"]:
                 if not totals_only:
                     metric = ".".join([slot_type, state, sanitize_gpu(group), sanitize_gpu(owner), k])
                     data[metric] += a.get(k,0)
