@@ -79,10 +79,10 @@ def get_pool_slots_gpu(pool, retry_delay=30, max_retries=4, totals_only=False, j
                         'Cpus','TotalSlotCpus','TotalCpus',
                         'Disk','TotalSlotDisk','TotalDisk',
                         'Memory','TotalSlotMemory','TotalMemory',
-			'Gpus','TotalSlotGpus','TotalGpus',
+                        'Gpus','TotalSlotGpus','TotalGpus',
                         'LoadAvg','TotalCondorLoadAvg','TotalLoadAvg',
                         'AccountingGroup','RemoteGroup','RemoteOwner',
-			'TotalGPUs-usage','TotalGPus-used_mem','AvgGPUs-usage','AvgGPUs-used_mem',
+                        'TotalGPUs-usage','TotalGPus-used_mem','AvgGPUs-usage','AvgGPUs-used_mem',
                         'kflops','IS_GLIDEIN'])
         except:
             logger.warning("trouble getting pool {0} startds, retrying in {1}s.".format(pool,retry_delay))
@@ -110,7 +110,7 @@ def get_pool_slots_gpu(pool, retry_delay=30, max_retries=4, totals_only=False, j
                       "TotalMemory", "TotalSlotMemory", "Memory",
                       "TotalCpus", "TotalSlotCpus", "Cpus",
                       "TotalGpus", "TotalSlotGpus", "Gpus",
-		      "TotalGPUs-usage","TotalGPus-used_mem","AvgGPUs-usage","AvgGPUs-used_mem",
+                      "TotalGPUs-usage","TotalGPus-used_mem","AvgGPUs-usage","AvgGPUs-used_mem",
                       "TotalLoadAvg", "LoadAvg", "TotalCondorLoadAvg"]:
                 metric = ".".join([slot_type, "totals", k])
                 data[metric] += a.get(k,0)
