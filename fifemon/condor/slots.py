@@ -121,7 +121,7 @@ def get_pool_slots(pool, retry_delay=30, max_retries=4, totals_only=False, job_r
             metric = ".".join([slot_type, "totals", "NumSlots"])
             data[metric] += 1
             metric = ".".join([slot_type, "totals", "Mflops"])
-            data[metric] += long(int(a.get("Cpus",1)) * kflops / 1024)
+            data[metric] += int(int(a.get("Cpus",1)) * kflops / 1024)
             metric = ".".join([slot_type, "totals", "StdSlots"])
             data[metric] += unclaimed_slot_weight(a.get("Cpus",1),a.get("Memory",0),a.get("Disk",0))
             if a.get("Cpus",0) == 0 or a.get("Memory",0) < 2000 or a.get("Disk",0) < 1048576:
@@ -153,7 +153,7 @@ def get_pool_slots(pool, retry_delay=30, max_retries=4, totals_only=False, job_r
                 metric = ".".join([slot_type, "totals", k])
                 data[metric] += a.get(k,0)
             metric = ".".join([slot_type, "totals", "Mflops"])
-            data[metric] += long(int(a.get("Cpus",1)) * kflops / 1024)
+            data[metric] += int(int(a.get("Cpus",1)) * kflops / 1024)
             metric = ".".join([slot_type, state, sanitize(group), sanitize(owner), "Weighted"])
             data[metric] += a.eval("SlotWeight")
             metric = ".".join([slot_type, state, sanitize(group), sanitize(owner), "NumSlots"])
@@ -171,7 +171,7 @@ def get_pool_slots(pool, retry_delay=30, max_retries=4, totals_only=False, job_r
             metric = ".".join([slot_type, state, "NumSlots"])
             data[metric] += 1
     if job_resources:
-        for k,v in get_pool_resource_utilization(pool, retry_delay, max_retries, schedd_constraint).iteritems():
+        for k,v in get_pool_resource_utilization(pool, retry_delay, max_retries, schedd_constraint).items():
             metric = ".".join(["jobs", "totals", k])
             data[metric] =  v
 

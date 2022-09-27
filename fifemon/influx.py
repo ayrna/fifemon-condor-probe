@@ -37,14 +37,14 @@ class Influxdb(object):
         points = []
         if schema is None:
             logger.warning("no schema provided, sending complete metric as measurement")
-            for k,v in data.iteritems():
+            for k,v in data.items():
                 points.append({
                     "measurement": k,
                     "fields": {field: v},
                     })
         else:
             schema_parts = schema.split(".")
-            for k,v in data.iteritems():
+            for k,v in data.items():
                 parts = k.split(".")
                 if len(parts) != len(schema_parts):
                     logger.error("metric '{metric}' does not match schema '{schema}', skipping".format(
@@ -55,7 +55,7 @@ class Influxdb(object):
                         "tags": {},
                         "fields": {field: v},
                         }
-                for i in xrange(len(parts)):
+                for i in range(len(parts)):
                     if schema_parts[i] == "measurement":
                         point["measurement"] = parts[i]
                     elif schema_parts[i] != "_":

@@ -23,7 +23,7 @@ def get_pool_status(pool, retry_delay=30, max_retries=4, schedd_constraint=True,
             "schema": "daemon.name.measurement",
             "metrics": {},
             }
-    for daemon_type, daemon in daemons.iteritems():
+    for daemon_type, daemon in daemons.items():
         retries = 0
         while retries < max_retries:
             try:
@@ -49,7 +49,7 @@ def get_pool_status(pool, retry_delay=30, max_retries=4, schedd_constraint=True,
                     logger.info('skipping worker node {}'.format(ad['Name']))
                     continue
                 for k in ad:
-                    if type(ad[k]) in [int,long,float]:
+                    if type(ad[k]) in [int,int,float]:
                         metric = ".".join([daemon_type, ad["Name"].replace(".","_").replace("@","-").replace(" ","_"), k])
                         data["metrics"][metric] = ad[k]
     return [data]

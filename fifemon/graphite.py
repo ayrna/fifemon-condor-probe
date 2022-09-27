@@ -1,7 +1,7 @@
 #!/usr/bin/python
 import logging
 import time
-import cPickle
+import pickle as cPickle
 import struct
 import socket
 import sys
@@ -15,7 +15,7 @@ def sanitize_key(key):
             ".": "_",
             " ": "_",
     }
-    for old,new in replacements.iteritems():
+    for old,new in replacements.items():
         key = key.replace(old, new)
     return key
 
@@ -34,11 +34,11 @@ class Graphite(object):
             timestamp=time.time()
         post_data=[]
         # turning data dict into [('$path.$key',($timestamp,$value)),...]]
-        for k,v in data.iteritems():
+        for k,v in data.items():
             t = (namespace+"."+k, (timestamp, v))
             post_data.append(t)
             logger.debug(str(t))
-        for i in xrange(len(post_data)//batch_size + 1):
+        for i in range(len(post_data)//batch_size + 1):
             # pickle data
             payload = cPickle.dumps(post_data[i*batch_size:(i+1)*batch_size], protocol=2)
             header = struct.pack("!L", len(payload))
