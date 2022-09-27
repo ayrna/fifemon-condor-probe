@@ -126,7 +126,7 @@ def get_idle_jobs(job_q, schedd_ad, retry_delay=30, max_retries=4):
                 "AccountingGroup","JobStatus",
                 "DESIRED_usage_model","DESIRED_Sites","JobUniverse",
                 "QDate","ServerTime",
-                "RequestMemory","RequestDisk","RequestCpus"])
+                "RequestMemory","RequestDisk","RequestCpus","Requestgpus"])
 
 def get_running_jobs(job_q, schedd_ad, retry_delay=30, max_retries=4):
     get_jobs(job_q, schedd_ad, constraint='JobStatus==2', retry_delay=retry_delay, max_retries=max_retries,
@@ -136,7 +136,8 @@ def get_running_jobs(job_q, schedd_ad, retry_delay=30, max_retries=4):
                 "JobUniverse",
                 "ServerTime","JobCurrentStartDate","RemoteUserCpu",
                 "RequestMemory","ResidentSetSize_RAW",
-                "RequestDisk","DiskUsage_RAW","RequestCpus"])
+                "RequestDisk","DiskUsage_RAW","RequestCpus",
+		"AssignedGPus","GPUsProvisioned","Requestgpus"])
 
 def get_held_jobs(job_q, schedd_ad, retry_delay=30, max_retries=4):
     get_jobs(job_q, schedd_ad, constraint='JobStatus==5', retry_delay=retry_delay, max_retries=max_retries,
@@ -144,6 +145,7 @@ def get_held_jobs(job_q, schedd_ad, retry_delay=30, max_retries=4):
                 "AccountingGroup","JobStatus",
                 "JobUniverse",
                 "ServerTime",
+		"Requestgpus",
                 "EnteredCurrentStatus"])
 
 
@@ -228,12 +230,22 @@ class Jobs(object):
                         counts[m+".wastetime_avg"] = counts[m+".wastetime"]/counts[m+".count"]
 
                 ## one standard slot == 1 cpu and 2000 MB of memory (undefined amount of disk)
+		## one standar gpu slot == 1 gpu (undefined the rest)
                 std_slots = 1
+		std_slots_gpu = 0
                 if "RequestCpus" in r:
                     cpus = r.eval("RequestCpus")
                     try:
                         counts[m+".cpu_request"] += cpus
                         std_slots = max(std_slots,cpus)
+                    except:
+                        pass
+                if "Requestgpus" in r:
+		    std_slots_gpu = 1
+                    gpus = r.eval("Requestgpus")
+                    try:
+                        counts[m+".gpu_request"] += gpus
+			std_slots_gpu = max(std_slots_gpu,gpus)
                     except:
                         pass
                 if "RequestMemory" in r:
@@ -249,8 +261,13 @@ class Jobs(object):
                     except:
                         pass
                 counts[m+".std_slots"] += std_slots
+                counts[m+".std_slots_gpu"] += std_slots_gpu
 
                 if r["JobStatus"] == 2:
+                    if "GPUsUsage" in r:
+                        counts[m+".gpus_usage"] += r.eval("GPUsUsage")
+                    if "GPUsProvisioned" in r:
+                        counts[m+".gpus_provisioned"] += r.eval("GPUsProvisioned")
                     if "ResidentSetSize_RAW" in r:
                         counts[m+".memory_usage_b"] += r.eval("ResidentSetSize_RAW")*1024
                     if "DiskUsage_RAW" in r:

@@ -1,2 +1,2 @@
-from .probe import Probe
 from .graphite import Graphite
+from .probe import Probe

@@ -20,6 +20,7 @@ class CondorProbe(Probe):
         post_pool_status:   collect main daemon (schedd, collector,
                             negotiator) statistics
         post_pool_slots:    collect & aggregate slot (startd) status
+        post_pool_slots_gpu:    collect & aggregate slot (startd) containing gpus
         slot_constraint:    optional constraint to filter slots (bool, str, or func)
         post_pool_glideins: collect & aggregate glidein slot status
         post_pool_prio:     collect user priorities
@@ -34,6 +35,7 @@ class CondorProbe(Probe):
         self.pool = kwargs.pop('pool', 'localhost')
         self.post_pool_status = kwargs.pop('post_pool_status',True)
         self.post_pool_slots = kwargs.pop('post_pool_slots',True)
+        self.post_pool_slots_gpu = kwargs.pop('post_pool_slots_gpu',True)
         self.slot_constraint = kwargs.pop('slot_constraint',True)
         self.post_pool_glideins = kwargs.pop('post_pool_glideins',False)
         self.post_pool_prio = kwargs.pop('post_pool_prio',True)
@@ -88,6 +90,20 @@ class CondorProbe(Probe):
                                              schedd_constraint=self.schedd_constraint)
             if self.use_graphite:
                 self.graphite.send_dict(self.namespace+".slots", data, send_data=(not self.test))
+        if self.post_pool_slots_gpu not in [False, 'false', 'False']:
+            if self.post_pool_slots_gpu == "totals":
+                logger.info('querying pool {0} slots_gpu (totals only)'.format(self.pool))
+                data = condor.get_pool_slots_gpu(self.pool, self.delay, self.retries,
+                                             totals_only=True, job_resources=False,
+                                             constraint=self.slot_constraint,
+                                             schedd_constraint=self.schedd_constraint)
+            else:
+                logger.info('querying pool {0} slots_gpu'.format(self.pool))
+                data = condor.get_pool_slots_gpu(self.pool, self.delay, self.retries,
+                                             constraint=self.slot_constraint,
+                                             schedd_constraint=self.schedd_constraint)
+            if self.use_graphite:
+                self.graphite.send_dict(self.namespace+".slots_gpu", data, send_data=(not self.test))
         if self.post_pool_glideins:
             logger.info('querying pool {0} glidein slots'.format(self.pool))
             data = condor.get_pool_glidein_slots(self.pool, self.delay, self.retries)
