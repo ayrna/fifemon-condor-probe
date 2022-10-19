@@ -125,16 +125,14 @@ def get_idle_jobs(job_q, schedd_ad, retry_delay=30, max_retries=4):
             attrs=["ClusterId","ProcId","Owner",
                 "AccountingGroup","JobStatus",
                 "DESIRED_usage_model","DESIRED_Sites","JobUniverse",
-                "QDate","ServerTime",
-                "RequestMemory","RequestDisk","RequestCpus","Requestgpus"])
+                "QDate", "RequestMemory","RequestDisk","RequestCpus","Requestgpus"])
 
 def get_running_jobs(job_q, schedd_ad, retry_delay=30, max_retries=4):
     get_jobs(job_q, schedd_ad, constraint='JobStatus==2', retry_delay=retry_delay, max_retries=max_retries,
             attrs=["ClusterId","ProcId","Owner",
                 "MATCH_GLIDEIN_Site","MATCH_EXP_JOBGLIDEIN_ResourceName",
                 "AccountingGroup","JobStatus",
-                "JobUniverse",
-                "ServerTime","JobCurrentStartDate","RemoteUserCpu",
+                "JobUniverse","JobCurrentStartDate","RemoteUserCpu",
                 "RequestMemory","ResidentSetSize_RAW",
                 "RequestDisk","DiskUsage_RAW","RequestCpus",
                 "AssignedGPus","GPUsProvisioned","Requestgpus"])
@@ -144,7 +142,6 @@ def get_held_jobs(job_q, schedd_ad, retry_delay=30, max_retries=4):
             attrs=["ClusterId","ProcId","Owner",
                 "AccountingGroup","JobStatus",
                 "JobUniverse",
-                "ServerTime",
                 "Requestgpus",
                 "EnteredCurrentStatus"])
 
@@ -163,7 +160,7 @@ class Jobs(object):
 
 
     def job_walltime(self, job_classad):
-        now = job_classad.get("ServerTime",0)
+        now = int(time.time())
         start = job_classad.get("JobCurrentStartDate",now)
         return (now-start)*job_classad.geteval("RequestCpus",1)
 
@@ -174,7 +171,7 @@ class Jobs(object):
         bin = None
         if job_classad["JobStatus"] == 1:
             if "QDate" in job_classad:
-                qage = job_classad["ServerTime"]-job_classad["QDate"]
+                qage = int(time.time())-job_classad["QDate"]
                 bin = ".count_"+find_bin(qage, self.bins)
             else:
                 bin = ".count_unknown"
@@ -186,7 +183,7 @@ class Jobs(object):
                 bin = ".count_unknown"
         elif job_classad["JobStatus"] == 5:
             if "EnteredCurrentStatus" in job_classad:
-                holdage = job_classad["ServerTime"]-job_classad["EnteredCurrentStatus"]
+                holdage = int(time.time())-job_classad["EnteredCurrentStatus"]
                 bin = ".count_holdage_"+find_bin(holdage, self.bins)
             else:
                 bin = ".count_holdage_unknown"
