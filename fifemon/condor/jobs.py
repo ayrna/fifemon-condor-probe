@@ -133,8 +133,8 @@ def get_running_jobs(job_q, schedd_ad, retry_delay=30, max_retries=4):
                 "MATCH_GLIDEIN_Site","MATCH_EXP_JOBGLIDEIN_ResourceName",
                 "AccountingGroup","JobStatus",
                 "JobUniverse","JobCurrentStartDate","RemoteUserCpu",
-                "RequestMemory","ResidentSetSize_RAW",
-                "RequestDisk","DiskUsage_RAW","RequestCpus",
+                "RequestMemory","ResidentSetSize",
+                "RequestDisk","DiskUsage","RequestCpus",
                 "AssignedGPus","GPUsProvisioned","Requestgpus"])
 
 def get_held_jobs(job_q, schedd_ad, retry_delay=30, max_retries=4):
@@ -265,9 +265,9 @@ class Jobs(object):
                         counts[m+".gpus_usage"] += r.eval("GPUsUsage")
                     if "GPUsProvisioned" in r:
                         counts[m+".gpus_provisioned"] += r.eval("GPUsProvisioned")
-                    if "ResidentSetSize_RAW" in r:
-                        counts[m+".memory_usage_b"] += r.eval("ResidentSetSize_RAW")*1024
-                    if "DiskUsage_RAW" in r:
-                        counts[m+".disk_usage_b"] += r.eval("DiskUsage_RAW")*1024
+                    if "ResidentSetSize" in r:
+                        counts[m+".memory_usage_b"] += r.eval("ResidentSetSize")*1024
+                    if "DiskUsage" in r:
+                        counts[m+".disk_usage_b"] += r.eval("DiskUsage")*1024
 
         return counts

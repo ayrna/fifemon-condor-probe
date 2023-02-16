@@ -50,13 +50,13 @@ def get_pool_resource_utilization_gpu(pool, retry_delay=30, max_retries=4, sched
     for ad in schedd_ads:
         try:
             schedd = htcondor.Schedd(ad)
-            results = schedd.query('jobstatus==2',['ResidentSetSize_RAW','DiskUsage_RAW'])
+            results = schedd.query('jobstatus==2',['ResidentSetSize','DiskUsage'])
         except Exception as e:
             logger.error(e)
         else:
             for r in results:
-                memory_usage += r.get('ResidentSetSize_RAW',0)
-                disk_usage += r.get('DiskUsage_RAW',0)
+                memory_usage += r.get('ResidentSetSize',0)
+                disk_usage += r.get('DiskUsage',0)
     return {
         "MemoryUsage":memory_usage/1024,
         "DiskUsage":disk_usage,
