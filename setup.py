@@ -8,7 +8,6 @@ setup(
     install_requires=[
         'htcondor',
         'prometheus-client',
-        'elasticsearch',
         'influxdb',
     ],
     entry_points='''
