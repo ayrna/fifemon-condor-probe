@@ -48,7 +48,7 @@ class CondorProbe(Probe):
         self.x509_user_cert = kwargs.pop('x509_user_cert',"")
 
         if self.post_pool_jobs:
-            self.jobs = condor.Jobs(self.pool)
+            self.jobs = condor.Jobs(kwargs.get('interval', 240), self.pool)
 
         self.last_prio={}
 

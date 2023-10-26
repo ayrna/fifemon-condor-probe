@@ -147,10 +147,11 @@ def get_held_jobs(job_q, schedd_ad, retry_delay=30, max_retries=4):
 
 
 class Jobs(object):
-    def __init__(self, pool="localhost"):
+    def __init__(self, interval, pool="localhost"):
         self.pool = pool
+        self.interval = interval
         self.collector = htcondor.Collector(pool)
-        self.bins=[(300,       'recent'),
+        self.bins=[(interval,  'recent'),
                    (3600,      'one_hour'),
                    (3600*4,    'four_hours'),
                    (3600*8,    'eight_hours'),
