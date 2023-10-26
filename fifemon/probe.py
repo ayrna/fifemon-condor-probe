@@ -114,7 +114,8 @@ metrics_port:   %d
                 self.graphite.send_dict(self.meta_namespace, meta_data, send_data = (not self.test))
             if self.use_influxdb:
                 pass
-            sleep = max(self.interval-duration,0)
+            already_slept = time.time() - start
+            sleep = max(self.interval - already_slept, 0)
             logger.info("({0}) sleeping {1} s".format(self.namespace,sleep))
             if self.test or self.once:
                 return
